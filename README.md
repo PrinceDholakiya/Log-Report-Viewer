@@ -1,4 +1,4 @@
-# AI-Driven-Log-Report
+# AI-Driven-Log-Report-Viewer
 
 An Android application built as part of a technical interview challenge. The app fetches 5,000+ AI-generated log entries from a remote endpoint, processes them client-side, and presents them through a clean, responsive UI. Every interaction — search, filter, group — is handled without a page reload or additional network call.
 
