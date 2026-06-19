@@ -1,0 +1,26 @@
+package com.interview.logviewer.domain.usecase
+
+import com.interview.logviewer.domain.model.AiFilter
+import com.interview.logviewer.domain.model.LogEntry
+import javax.inject.Inject
+
+class FilterLogsUseCase @Inject constructor() {
+    operator fun invoke(
+        logs: List<LogEntry>,
+        query: String,
+        aiFilter: AiFilter = AiFilter.ALL
+    ): List<LogEntry> {
+        val needle = query.trim().lowercase()
+        return logs
+            .filter { entry ->
+                when (aiFilter) {
+                    AiFilter.ALL -> true
+                    AiFilter.AI_GENERATED -> entry.isAiGenerated
+                    AiFilter.NOT_AI_GENERATED -> !entry.isAiGenerated
+                }
+            }
+            .filter { entry ->
+                needle.isEmpty() || entry.searchableText.contains(needle)
+            }
+    }
+}
