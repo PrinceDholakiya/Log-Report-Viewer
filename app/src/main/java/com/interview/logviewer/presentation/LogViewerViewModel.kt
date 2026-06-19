@@ -117,12 +117,19 @@ class LogViewerViewModel @Inject constructor(
         viewModelScope.launch(defaultDispatcher) {
             val filtered = filterLogsUseCase(allLogs, query, aiFilter)
             val groups = groupLogsUseCase(filtered, mode)
+
+            // Aggregate severity counts from filtered list only
+            val filteredSeverityCounts = filtered
+                .groupingBy { it.severity }
+                .eachCount()
+
             _uiState.update {
                 it.copy(
                     groups = groups,
                     filteredCount = filtered.size,
                     groupingMode = mode,
-                    aiFilter = aiFilter              // ← persist selection in state
+                    aiFilter = aiFilter,  // ← persist selection in state
+                    filteredSeverityCounts = filteredSeverityCounts   // ← update severity count
                 )
             }
         }

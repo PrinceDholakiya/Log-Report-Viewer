@@ -101,7 +101,7 @@ private fun OverviewRow(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SeverityRingIndicator(severityCounts = uiState.overallSeverityCounts, diameter = 72.dp, strokeWidth = 10.dp)
+        SeverityRingIndicator(severityCounts = uiState.filteredSeverityCounts, diameter = 72.dp, strokeWidth = 10.dp)
 
         Column(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
             Text(

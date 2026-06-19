@@ -17,6 +17,7 @@ data class LogViewerUiState(
     val totalCount: Int = 0,
     val filteredCount: Int = 0,
     val overallSeverityCounts: Map<Severity, Int> = emptyMap(),
+    val filteredSeverityCounts: Map<Severity, Int> = emptyMap(), // ← add this
     val selectedLog: LogEntry? = null
 ) {
     val isEmptyResult: Boolean

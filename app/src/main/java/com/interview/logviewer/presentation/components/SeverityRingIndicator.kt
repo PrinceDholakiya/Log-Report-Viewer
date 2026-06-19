@@ -28,32 +28,24 @@ fun SeverityRingIndicator(
 ) {
     val total = severityCounts.values.sum()
 
-    val criticalCount = (severityCounts[Severity.FATAL] ?: 0) + (severityCounts[Severity.ERROR] ?: 0)
+    // Find the severity with the most logs right now
+    // (respects current search/filter — updates live)
+    val dominantEntry = severityCounts
+        .filter { it.value > 0 }
+        .maxByOrNull { it.value }   // ← highest count wins
 
-    val errorDensityPercent =
-        if (total == 0) 0 else ((criticalCount * 100f) / total).toInt()
+    val dominantSeverity = dominantEntry?.key
+    val dominantPercent = if (total == 0 || dominantEntry == null) 0
+    else ((dominantEntry.value * 100f) / total).toInt()
 
     Box(
         modifier = modifier.size(diameter),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(
-            modifier = Modifier.size(diameter)
-        ) {
-            val stroke = Stroke(
-                width = strokeWidth.toPx(),
-                cap = StrokeCap.Butt
-            )
-
-            val arcSize = Size(
-                width = size.width - stroke.width,
-                height = size.height - stroke.width
-            )
-
-            val topLeft = Offset(
-                x = stroke.width / 2f,
-                y = stroke.width / 2f
-            )
+        Canvas(modifier = Modifier.size(diameter)) {
+            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt)
+            val arcSize = Size(size.width - stroke.width, size.height - stroke.width)
+            val topLeft = Offset(stroke.width / 2f, stroke.width / 2f)
 
             if (total == 0) {
                 drawArc(
@@ -72,13 +64,14 @@ fun SeverityRingIndicator(
 
             Severity.displayOrder.forEach { severity ->
                 val count = severityCounts[severity] ?: 0
-
                 if (count > 0) {
-                    val sweepAngle =
-                        (count.toFloat() / total.toFloat()) * 360f
+                    val sweepAngle = (count.toFloat() / total.toFloat()) * 360f
 
                     drawArc(
-                        color = severity.toColor(),
+                        color = if (severity == dominantSeverity)
+                            severity.toColor()           // full opacity — stands out
+                        else
+                            severity.toColor().copy(alpha = 0.4f),  // dimmed — recedes
                         startAngle = startAngle,
                         sweepAngle = sweepAngle,
                         useCenter = false,
@@ -86,25 +79,25 @@ fun SeverityRingIndicator(
                         size = arcSize,
                         style = stroke
                     )
-
                     startAngle += sweepAngle
                 }
             }
         }
 
-        // To mention total % of errors and fatal combined.
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        // Center label — always shows the dominant severity
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "$errorDensityPercent%",
-                style = MaterialTheme.typography.titleLarge
+                text = "$dominantPercent%",
+                style = MaterialTheme.typography.titleLarge,
+                // Color matches the dominant segment — instant visual link
+                color = dominantSeverity?.toColor()
+                    ?: MaterialTheme.colorScheme.onSurface
             )
-
             Text(
-                text = "errors",
+                text = dominantSeverity?.label ?: "-",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = dominantSeverity?.toColor()?.copy(alpha = 0.8f)
+                    ?: MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
