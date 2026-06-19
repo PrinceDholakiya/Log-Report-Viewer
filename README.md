@@ -39,13 +39,13 @@ Developed with Jetpack Compose, MVVM & Clean Architecture, and Hilt.
 
 ## Features
 
-**Search as you type** — Results update within 200ms of the last keystroke. The search bar matches against message text, tag, severity level, and log ID simultaneously. To keep this fast across 5,000 entries, a pre-computed lowercase string is attached to each log at parse time so the filter never re-derives anything on each keystroke.
+**Search as you type** — The search bar matches against message text, tag, severity level, and log ID simultaneously. To keep this fast across 5,000 entries, a pre-computed lowercase string is attached to each log at parse time so the filter never re-derives anything on each keystroke.
 
 **AI Origin Filter** — A dropdown next to the grouping chips lets you narrow the list to AI-generated logs, non-AI logs, or both. This filter stacks with the text search — you can search "connection timed out" while also filtering to AI-generated only.
 
 **Grouping** — Logs can be grouped by calendar day or by session ID, switchable at any time without re-fetching. Each group header shows the total entry count and sticks to the top of the screen while scrolling through that group.
 
-**Severity Ring** — A hand-drawn Canvas donut chart sits in the header. Every segment represents a severity level, sized proportionally to its share of the currently visible logs. The center always shows the dominant severity and its percentage — so when you search "network", the ring immediately reflects which severity dominates those results rather than showing a static breakdown of the full dataset.
+**Severity Ring** — With the help of AI, an implementation of hand-drawn Canvas donut chart sits in the header. Every segment represents a severity level, sized proportionally to its share of the currently visible logs. The center always shows the dominant severity and its percentage — so when you search "network", the ring immediately reflects which severity dominates those results rather than showing a static breakdown of the full dataset.
 The ViewModel exposes a single `StateFlow<LogViewerUiState>` that the screen observes. Every user action — typing, tapping a chip, selecting a filter — calls one function on the ViewModel which updates that one state object. Compose then recomposes only the parts of the screen whose inputs actually changed.
 
 ---
@@ -64,7 +64,7 @@ This string is built once. From that point on, every search is just:
 logs.filter { it.searchableText.contains(needle) }
 ```
 
-The ViewModel debounces the raw query by 200ms, so this filter only runs after the user pauses typing rather than on every single character. The filter runs on `Dispatchers.Default` (a background thread), so the main thread is never blocked regardless of dataset size.
+The filter only runs after the user pauses typing rather than on every single character. The filter runs on `Dispatchers.Default` (a background thread), so the main thread is never blocked regardless of dataset size.
 
 The AI filter and text search are applied in the same pipeline — the AI filter runs first, then the text search runs on whatever remains. Both are recalculated together on every change, and the severity ring is recomputed from the same filtered list so it always reflects exactly what is visible on screen.
 
@@ -72,7 +72,7 @@ The AI filter and text search are applied in the same pipeline — the AI filter
 
 ## Running the Project
 
-1. Clone the repo and open the project in Android Studio (Ladybug or newer recommended).
+1. Clone the repo and open the project in Android Studio.
 2. Let Gradle sync — all dependencies are declared in `gradle/libs.versions.toml`.
 3. Run on a device or emulator with API 26+.
 
@@ -101,8 +101,6 @@ The project requires an internet connection on first launch to fetch the log dat
 **Shimmer Loading** — The app shows animated placeholder rows that mirror the exact shape and spacing of the real list. The transition to real data feels natural because the layout doesn't shift.
 
 **Details Sheet** — Tapping any log row slides up a bottom sheet showing the full entry: timestamp down to milliseconds, tag, session ID, latency, AI origin flag, and the complete log ID.
-
-**In-Memory Cache** — The first load takes around 2 seconds on a simulator device (Pixel 7 Pro, good WiFi). Every subsequent open is instant because the parsed dataset is held in memory for the lifetime of the app process. The Retry button deliberately clears the cache first so it always forces a fresh network call.
 
 ---
 
