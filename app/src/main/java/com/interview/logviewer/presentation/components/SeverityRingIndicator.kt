@@ -28,11 +28,10 @@ fun SeverityRingIndicator(
 ) {
     val total = severityCounts.values.sum()
 
-    // Find the severity with the most logs right now
-    // (respects current search/filter — updates live)
+    // Find the severity with the most logs right with current search/filter — updates live
     val dominantEntry = severityCounts
         .filter { it.value > 0 }
-        .maxByOrNull { it.value }   // ← highest count wins
+        .maxByOrNull { it.value }   // highest count
 
     val dominantSeverity = dominantEntry?.key
     val dominantPercent = if (total == 0 || dominantEntry == null) 0
