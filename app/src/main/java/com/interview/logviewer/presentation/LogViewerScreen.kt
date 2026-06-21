@@ -50,7 +50,7 @@ import com.interview.logviewer.presentation.components.SeverityRingIndicator
 import com.interview.logviewer.domain.model.AiFilter
 import com.interview.logviewer.presentation.components.ShimmerLogItem
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class) // <- Needed for CenterAlignedTopAppBar and ModalBottomSheet
 @Composable
 fun LogViewerScreen(viewModel: LogViewerViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -177,7 +177,8 @@ private fun AiFilterDropdown(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+
+@OptIn(ExperimentalFoundationApi::class) // To allow unstable compose API
 @Composable
 private fun LogList(
     uiState: LogViewerUiState,
@@ -210,6 +211,7 @@ private fun LoadingState() {
     }
 }
 
+// Error status handling
 @Composable
 private fun ErrorState(message: String, onRetry: () -> Unit) {
     val userFriendlyMessage = when {
@@ -262,6 +264,7 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
     }
 }
 
+// If there are no logs to show, show a message
 @Composable
 private fun EmptyResultState() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

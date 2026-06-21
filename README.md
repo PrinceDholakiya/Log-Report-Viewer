@@ -40,6 +40,12 @@ Developed with Jetpack Compose, MVVM & Clean Architecture, and Hilt.
 
 ---
 
+## Demo Video Recording
+
+![App Demo](screenshots/Screen_recording_gif.gif)
+
+---
+
 ## Features
 
 **Search as you type** — The search bar matches against message text, tag, severity level, and log

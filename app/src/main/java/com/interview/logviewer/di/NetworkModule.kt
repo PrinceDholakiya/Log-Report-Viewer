@@ -45,7 +45,7 @@ object NetworkModule {
         Retrofit.Builder()
             .baseUrl(LogApiService.BASE_URL)
             .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType())) // <- for wiring kotlinx.serialization into Retrofit
             .build()
 
     @Provides

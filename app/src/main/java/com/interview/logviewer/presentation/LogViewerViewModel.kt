@@ -36,34 +36,41 @@ class LogViewerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LogViewerUiState())
     val uiState: StateFlow<LogViewerUiState> = _uiState.asStateFlow()
 
-    /** Raw, un-debounced query — drives the text field so typing always feels instant. */
+    // Raw, un-debounced query — drives the text field so typing always feels instant.
     private val searchQuery = MutableStateFlow("")
 
-    /** Full unfiltered dataset, kept outside the StateFlow since the UI never renders it directly. */
+    // Full unfiltered dataset, kept outside the StateFlow since the UI never renders it directly.
     private var allLogs: List<LogEntry> = emptyList()
 
     init {
+        // Initial call to fetch all the logs
         loadLogs()
+        // And then observe the debounced search query
         observeSearchQuery()
     }
 
+    // When user types in the search bar
     fun onSearchQueryChange(query: String) {
         searchQuery.value = query
         _uiState.update { it.copy(searchQuery = query) }
     }
 
+    // When user selects Grouping Mode
     fun onGroupingModeChange(mode: GroupingMode) {
         applyFilterAndGroup(searchQuery.value, mode)
     }
 
+    // When user selects AI based filter
     fun onAiFilterChange(filter: AiFilter) {
         applyFilterAndGroup(searchQuery.value, _uiState.value.groupingMode, filter)
     }
 
+    // When user clicks on LogListItem
     fun onLogSelected(log: LogEntry) {
         _uiState.update { it.copy(selectedLog = log) }
     }
 
+    // When user clicks outside the bottom sheet for LogListItem
     fun onDetailsDismissed() {
         _uiState.update { it.copy(selectedLog = null) }
     }
@@ -71,7 +78,6 @@ class LogViewerViewModel @Inject constructor(
     fun retry() {
         loadLogs()
     }
-
 
     private fun loadLogs() {
         viewModelScope.launch {
@@ -112,10 +118,12 @@ class LogViewerViewModel @Inject constructor(
     private fun applyFilterAndGroup(
         query: String,
         mode: GroupingMode,
-        aiFilter: AiFilter = _uiState.value.aiFilter   // defaults to whatever is already selected
+        aiFilter: AiFilter = _uiState.value.aiFilter   // default All is selected as we want all the data (AI based and None AI based).
     ) {
         viewModelScope.launch(defaultDispatcher) {
+            // Filter logs for AI based search or not
             val filtered = filterLogsUseCase(allLogs, query, aiFilter)
+            // Filter logs by Date or Session
             val groups = groupLogsUseCase(filtered, mode)
 
             // Aggregate severity counts from filtered list only

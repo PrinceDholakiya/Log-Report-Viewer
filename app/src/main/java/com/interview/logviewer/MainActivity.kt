@@ -21,15 +21,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            // Wraps everything in Material3 and typography system
             LogViewerTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        val viewModel: LogViewerViewModel = hiltViewModel()
+                        val viewModel: LogViewerViewModel = hiltViewModel()  //  Compose extension function build the ViewModel with all its dependencies automatically
                         LogViewerScreen(viewModel = viewModel)
                     }
                 }
             }
         }
-
     }
 }
