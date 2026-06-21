@@ -42,7 +42,7 @@ Developed with Jetpack Compose, MVVM & Clean Architecture, and Hilt.
 
 ## Demo Video Recording
 
-![App Demo](screenshots/Screen_recording_gif.gif)
+<img src="screenshots/Screen_recording_gif.gif" width="375" alt="App Demo"/>
 
 ---
 
